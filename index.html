@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<script type="text/javascript" src="mnt.js"></script>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Feiemusic</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/all.css">
+  <link rel="stylesheet" href="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/css/mdb.min.css">
+  <link rel="stylesheet" href="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/css/style.css">
+  <link rel="stylesheet" href="scrollbar.css">
+</head>
+<style>
+  body {
+    user-select: none;
+  }
+
+  button {
+    border: 0px;
+  }
+
+  .example-1 {
+    position: relative;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+</style>
+
+<body
+  style="background-repeat: no-repeat;background-size: auto 100vh;background-color: black;background-position:center;overflow: hidden;height: 100vh;width: 100vw;">
+
+  <!-- Start your project here-->
+  <input type="file" id="bgfileselector" onchange="getFilePath()"
+    style="filter:alpha(opacity=0);opacity:0;width: 0;height: 0;" />
+  <video id="player" style="top: 0px;left: 0px;position: absolute;height: 100vh;width: 100vw;" ended="next()"></video>
+
+  <div style="width: 432px;position: absolute;right: 20px;top:20px;opacity: 90%;" id="main"
+    class="card card-cascade wider">
+    <i class="fas fa-image"
+      style="float: right;margin-right: 8px;position: relative;top: 46px;right: -380px;z-index: 100;color: aliceblue;text-shadow: 0px 2px 10px black;"
+      onclick="bgp()"></i>
+    <div class="view view-cascade gradient-card-header  purple-gradient" style="z-index: 2;">
+      <h5 style="position: relative;right: 128px;margin-bottom: -24px; text-shadow: 0px 2px 10px black;">Feiemusic</h5>
+      <div class="view overlay" style="padding: 32px 32px 0px 32px;z-index: 3;">
+        <div class="card card-cascade wider">
+          <div style="height: 128px;padding: 24px;" class="view view-cascade gradient-card-header peach-gradient">
+            <div class="flex-center flex-column">
+              <h5 class="card-header-title mb-3" id="title" style="text-shadow: 0px 2px 10px black;">选择一首歌曲</h5>
+              <h6 class="card-title" id="artist" style="font-size: medium;text-shadow: 0px 2px 4px black;">待定艺术家</h6>
+            </div>
+          </div>
+        </div>
+
+
+        <br><br>
+        <p class="card-text" style="height: 8px;position: relative;top: -20px;text-align: center;" id="lyc">暂无歌词</p>
+
+        <div class="progress md-progress">
+          <div class="progress-bar bg-warning" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+            aria-valuemax="100" id="len"></div>
+        </div>
+        <p style="margin-top: -6px;font-size: x-small;text-align: center;" id="nowtime">0:00 / 0:00</p>
+        <span class="font-weight-bold text-primary ml-2 mt-1 valueSpan"></span>
+        <div id="buttongroup" class="d-flex justify-content-center align-items-center"
+          style="width: 350px;position: relative;left: -7px;top: -20px;margin-bottom: -8px;">
+          <button type="button" class="btn-floating btn-primary" onclick="gbackward()">
+            <i class="fas fa-fast-backward"></i>
+          </button>
+          <button type="button" class="btn-floating btn-primary" onclick="backward()">
+            <i class="fas fa-backward"></i>
+          </button>
+          <button type="button" class="btn-floating btn-lg btn-default" id="playbnt" onclick="startstop()">
+            <i class="fas fa-play" id="playicon"></i>
+          </button>
+          <button type="button" class="btn-floating btn-primary" onclick="forward()">
+            <i class="fas fa-forward"></i>
+          </button>
+          <button type="button" class="btn-floating btn-primary" onclick="gforward()">
+            <i class="fas fa-fast-forward"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body card-body-cascade"
+      style="z-index: 1;padding: 10px 0px 0px 0px;width: 400px;position: relative;top:-12px;overflow: hidden;">
+      <div class="card example-1 scrollbar-near-moon text-center;"
+        style="height: 350px;padding: 0px;width: 400px;position: relative;top: -2px;z-index: 0" id="mlist">
+        <div style="height: 100%;width: 100%;text-align: center;" id="int_">
+          <button class="btn aqua-gradient" onclick="getMusicObj()" id="intG"
+            style="margin-top: 100px;">选择歌曲文件夹</button><Br><Br>
+          <div class="preloader-wrapper small active" id="loading" style="display: none;">
+            <div class="spinner-layer spinner-yellow-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+          </button><br>
+        </div>
+        <div class="list-group">
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-floating btn-primary" onclick="changeplaymode()"
+      style="position: relative;bottom: 640px;z-index: 500;left: 340px;">
+      <i class="fas fa-exchange-alt" id="playmode"></i>
+    </button>
+    <div class="card"
+      style="width: 180px;height: 80px;position: relative;bottom: 920px;left: 300px;z-index: 2;display: none;padding: 8px;"
+      id="savepicConfirm">
+      <p style="margin-bottom: 0px;"> Save this pictrue?</p>
+      <button type="button" class="btn btn-light btn-sm" style="width: 60px;display: inline;padding: 0px;height: 30px;"
+        onclick="$('#savepicConfirm').css('display','none')">No</button>
+      <button type="button" class="btn btn-success btn-sm"
+        style="width: 60px;display: inline;padding: 0px;height: 30px;"
+        onclick="$('#savepicConfirm').css('display','none');savepictrue()">Yes</button>
+    </div>
+    <div id="drag" style="width: 432px;height: 60px;position: relative;bottom: 860px;z-index: 3;"></div>
+
+  </div>
+
+  <canvas id="tutorial" width="64" height="64" style="display: none;"></canvas>
+
+</body>
+<!-- End your project here-->
+
+<!-- jQuery -->
+<script type="text/javascript" src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/js/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript"
+  src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/js/mdb.min.js"></script>
+<!-- Your custom scripts (optional) -->
+<script src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/js/localforage.min.js"></script>
+<script src="https://feiedl.oss-cn-hangzhou.aliyuncs.com/websrc/music/js/jsmediatags.js"></script>
+<script type="text/javascript" src="player.js"></script>
+<script type="text/javascript" src="mnt.js"></script>
+</html>
