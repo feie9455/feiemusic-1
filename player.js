@@ -44,6 +44,14 @@ window.onload = () => {
     if (!window.showDirectoryPicker) {
         toastr["error"]("Your browser doesn't support the function we need.\nCheck if you are in HTTPS connection or upgrade your browser.")
     }
+    localforage.getItem("vol").then(vol => {
+        if (vol) {
+            player.volume = vol
+        } else {
+            localforage.setItem("vol", 1)
+            player.volume = 1
+        }
+    })
     setInterval(() => {
         refrush()
     }, 1000);
@@ -330,6 +338,7 @@ drag.onmousedown = function (event) {
         drag.setCapture();
     }
     document.onmousemove = function (event) {
+        console.log(1);
         var event = event || window.event;
         refrush(event)
     }
@@ -343,7 +352,7 @@ drag.onmousedown = function (event) {
 }
 
 function bgp() {
-    $("#file").trigger("click");
+    $("#bgfileSelector").trigger("click");
 }
 
 function getFilePath() {
@@ -375,7 +384,7 @@ function _padZero(num) {
 }
 
 async function changeFavicon(tags) {
-    let needToAdd=false
+    let needToAdd = false
     let $favicon = document.querySelector('link[rel="icon"]');
     if (!$favicon) { $favicon = document.createElement("link"); let needToAdd = true }
     $favicon.rel = "icon";
@@ -404,7 +413,7 @@ async function changeFavicon(tags) {
                 , 200);
         } else {
             $favicon.href = "favicon.ico"
-            if(needToAdd){document.head.appendChild($favicon);}
+            if (needToAdd) { document.head.appendChild($favicon); }
         }
     }
 }
@@ -442,4 +451,48 @@ window.onkeydown = event => {
         }
         toastr["success"](`Volum has been increased by 10%, now it is ${~~(player.volume * 100)}%`)
     }
+}
+
+function setting() {
+    document.getElementById("settingContainer").style.display = "block"
+
+    document.getElementById("volController").value = Math.floor(player.volume * 100)
+    let setting = document.getElementById("setting")
+    setTimeout(() => {
+        setting.style.opacity = 0.9
+        setTimeout(() => {
+
+            setting.style.transform = "rotateX(0deg) scale(1.0,1.0)"
+
+
+        }, 80);
+
+    }, 10);
+}
+function closeSetting() {
+    let setting = document.getElementById("setting")
+    setting.style.transform = "rotateX(0deg) scale(1.2,1.2)"
+
+    setTimeout(() => {
+        setting.style.transform = "rotateX(30deg) scale(1.2,1.2)"
+        setTimeout(() => {
+            setting.style.opacity = 0
+            setTimeout(() => {
+                document.getElementById("settingContainer").style.display = "none"
+
+            }, 300);
+        }, 50);
+
+    }, 10);
+
+}
+
+function volChange() {
+    player.volume = document.getElementById("volController").value / 100
+    localforage.setItem("vol", player.volume)
+}
+
+function decodeFail() {
+    toastr["error"]("文件解码失败！")
+    gforward()
 }
